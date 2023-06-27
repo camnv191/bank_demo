@@ -11,6 +11,9 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -26,13 +29,61 @@
             </div>
         </nav>
         <?php if (!isset($_GET["page"]) || isset($_GET["page"]) && $_GET["page"] == "admin_page") {?>
-            <div class="text-center">
-                <h2>An unordered HTML list</h2>
-                <ul>
-                    <li>Coffee</li>
-                    <li>Tea</li>
-                    <li>Milk</li>
-                </ul>
+            <div style="padding: 15px;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Amount</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            include 'connect_DB.php';
+                            $connect = OpenCon();
+                            mysqli_set_charset($connect,"utf8");
+                            $rows = mysqli_query($connect, "select * from users ");
+                            foreach ($rows as $row) { 
+                        ?>
+                            <tr>
+                                <th scope="row"><?php echo $row['id'] ?></th>
+                                <td><?php echo $row['name'] ?></td>
+                                <td><?php echo $row['user_name'] ?></td>
+                                <td><?php echo $row['amount'] ?></td>
+                                <td>
+                                    <button type="button" class="btn btn-success" onclick="editAmount(<?php echo $row['id'] ?>, <?php echo $row['amount'] ?>)">
+                                        <i class="bi bi-pencil mr-2"></i> Edit
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <form action="" method="POST" id="formUpdate">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Edit Amount</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeModal()">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <input id="id" name="id" hidden> 
+                                    <input class="form-control" id="amount" name="amount">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModal()">Close</button>
+                                    <button type="submit" name="updateUser" class="btn btn-primary">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         <?php } else { ?>
             <!-- Header-->
@@ -93,3 +144,25 @@
         <script src="js/scripts.js"></script>
     </body>
 </html>
+<script>
+    function editAmount(id, amount) {
+        $("#exampleModal").addClass("show");
+        $("#exampleModal").css("display", "block");
+        $("#amount").val(amount);
+        $("#id").val(id);
+    }
+
+    function closeModal() {
+        $("#exampleModal").removeClass("show");
+        $("#exampleModal").css("display", "none");
+    }
+</script>
+<?php
+    if (isset($_POST["updateUser"])) {
+        $amount = $_POST["amount"];
+        $id = $_POST['id'];
+        $rows = mysqli_query($connect, "update users set amount = '$amount' where id ='$id'");
+        CloseCon($connect);
+        header("Refresh:0");
+    }
+?>
