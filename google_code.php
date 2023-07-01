@@ -58,7 +58,7 @@
         $_SESSION['auth_secret'] = $secret;
     }
 
-    $qrCodeUrl = $Authenticator->getQR('banking_demo', $_SESSION['auth_secret']);
+    $qrCodeUrl = $Authenticator->getQR('banking_demo_local', $_SESSION['auth_secret']);
     
     if (!isset($_SESSION['failed'])) {
         $_SESSION['failed'] = false;

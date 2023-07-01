@@ -14,8 +14,13 @@
         die();
     }
     $Authenticator = new Authenticator();
+    if ($_SESSION['login'] == true) {
+        $code = $_SESSION['user_secret'];
+    }  else {
+        $code = $_SESSION['auth_secret'];
+    }
 
-    $checkResult = $Authenticator->verifyCode($_SESSION['auth_secret'], $_POST['code'], 2);    // 2 = 2*30sec clock tolerance
+    $checkResult = $Authenticator->verifyCode($code, $_POST['code'], 2);    // 2 = 2*30sec clock tolerance
 
     if (!$checkResult) {
         $_SESSION['failed'] = true;
@@ -34,7 +39,7 @@
         header("location:home.php");
     } else {
         $password = md5($_SESSION['password']);
-        mysqli_query($connect,"insert into users (user_name, password, role, name, status, google_code) VALUE ('{$_SESSION['user_name']}', '{$password}', 'user', '{$_SESSION['name']}', 0, '{$_POST['code']}')");
+        mysqli_query($connect,"insert into users (user_name, password, role, name, status, google_code) VALUE ('{$_SESSION['user_name']}', '{$password}', 'user', '{$_SESSION['name']}', 0, '{$_SESSION['auth_secret']}')");
 
         unset($_SESSION['name']);
         unset($_SESSION['user_name']);

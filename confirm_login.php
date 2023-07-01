@@ -23,8 +23,10 @@
         if ($count == 1) {
             $row = $rows->fetch_assoc();
             $_SESSION['role'] = $row['role'];
+            $_SESSION['user_id'] = $row['id'];
             $_SESSION['user_name'] = $user_name;
             $_SESSION['login'] = true;
+            $_SESSION['user_secret'] = $row['google_code'];
         } else {
             header("location:index.php?page=login");
             setcookie("error", "login information is not correct", time()+1, "/","", 0);
@@ -33,12 +35,6 @@
     } else {
         header("location:index.php?page=login");
         exit;
-    }
-
-    $Authenticator = new Authenticator();
-    if (!isset($_SESSION['auth_secret'])) {
-        $secret = $Authenticator->generateRandomSecret();
-        $_SESSION['auth_secret'] = $secret;
     }
     
     if (!isset($_SESSION['failed'])) {

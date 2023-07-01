@@ -1,3 +1,11 @@
+<?php 
+  if(isset($_GET["logout"])) {
+    unset($_SESSION['role']);
+    unset($_SESSION['user_id']);
+    unset($_SESSION['user_name']);
+    unset($_SESSION['login']);
+  }
+?>
 <section class="vh-100 gradient-custom" style="height: 100vh">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
